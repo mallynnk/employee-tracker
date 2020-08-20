@@ -67,27 +67,28 @@ function viewEmployees() {
 //function to view employees by department
 function employeesByDep() {
     connection.query(
-        `SELECT employee.*, department.department_name 
-        AS department_name 
+        `SELECT employee.last_name, department.department_name
+        AS department_name
         FROM employee 
         LEFT JOIN department 
-        ON employee.? = department.id `, function(err, data) { 
+        ON department.department_name = employee.id `, function(err, data) { 
         if (err) throw err;
-        console.log(data)
-        start();
+        console.table(data)
+        start()
     })
+
 };
 
 //function to view employees by manager
 function employeesByManager() {
     connection.query(
-        `SELECT employee.*, employee_role.title
-        AS employee_role.title
+        `SELECT employee.manager_id, employee.last_name
+        AS manager_id
         FROM employee 
-        LEFT JOIN employee_role
-        ON employee.manager_id = employee_role.id `, function(err, data) { 
+        LEFT JOIN employee 
+        ON employee.last_name = employee.manager_id `, function(err, data) { 
         if (err) throw err;
-        console.log(data)
+        console.table(data)
         start();
     })
 };
@@ -108,7 +109,7 @@ function addEmployee() {
             type: "list",
             name: "role_id",
             message: "what is they employee's role?",
-            choices: ['Data Analyst, FrontEnd Developer, Manager, Sales Representative, Software Engineer, HR Manager, Operations Manager, Accountant']
+            choices: ['Data Analyst', 'FrontEnd Developer', 'Manager', 'Sales Representative', 'Software Engineer', 'HR Manager', 'Operations Manager', 'Accountant']
         },
     ]) 
     .then(function(answer) {
@@ -150,10 +151,10 @@ function removeEmployee() {
 function updateRole() {
     inquirer.prompt([ 
         {
-            type: "input",
+            type: "list",
             name: "employee_role",
             message: "what is the employee's new role?",
-            choices: ['Data Analyst, FrontEnd Developer, Manager, Sales Representative, Software Engineer, HR Manager, Operations Manager, Accountant']
+            choices: ['Data Analyst', 'FrontEnd Developer', 'Manager', 'Sales Representative', 'Software Engineer', 'HR Manager', 'Operations Manager', 'Accountant']
         },
     ]).then (function(answer) {
         connection.query("UPDATE employee_role SET ? WHERE ?", 
@@ -161,7 +162,7 @@ function updateRole() {
         title: answer.employee_role
     },
     {
-       //i have no idea? 
+       //idk
     },
     function(error) { 
         console.log(answer.employee_id + "has been deleted from your employees");
