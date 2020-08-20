@@ -4,11 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "migrate": "sqlite3 db/election.db < db/schema.sql",
-    "seed": "sqlite3 db/election.db < db/seeds.sql",
-    "db": "sqlite3 db/election.db",
-    "start": "node server.js"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
