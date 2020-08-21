@@ -93,7 +93,7 @@ function viewEmployees() {
     })
 };
 
-//function to view all departments
+//function to view all departments -- working
 function allDeps() {
     connection.query(
         `SELECT id AS ID, department_name AS "Department Name" FROM department`, function(err, data) { 
@@ -103,10 +103,14 @@ function allDeps() {
     })
 };
 
-//function to view all roles -- add title, role id , department and salary
+//function to view all roles -- working
 function allRoles() {
     connection.query(
-        `SELECT employee_role.id AS ID, title AS "Employee Role", employee_role.salary as Salary, department_id AS "Dept #", department_name AS "Department" 
+        `SELECT employee_role.id AS ID, 
+            title AS "Employee Role", 
+            employee_role.salary as Salary, 
+            department_id AS "Dept #", 
+            department_name AS "Department" 
         FROM employee_role
         INNER JOIN department
         ON department.id = department_id
@@ -196,7 +200,7 @@ function addDep() {
     })
 };
 
-//add role -- working
+//add role -- working, but prob want to add salary, department too 
 function addRole() {
     inquirer.prompt([ 
         {
@@ -284,30 +288,121 @@ function updateRole() {
 
 //BONUS FUNCTIONS 
 
-//function to delete employee
+//function to delete employee -- working but want to show more employee info
 function removeEmployee() {
-    inquirer.prompt([ 
-        {
-            type: "input",
-            name: "employee_id",
-            message: "enter the employee's id"
-        },
+    var employeeQuery = "SELECT * FROM employee;";
+
+    connection.query(employeeQuery, function (err, employees) {
+            if (err) throw err;
+
+            inquirer.prompt([ 
+                
+                {
+                    name: "removeEmployee",
+                    type: "rawlist",
+                    choices: function() {
+                        var arrayOfChoices = [];
+                        for (var i = 0; i < employees.length; i++) {
+                            arrayOfChoices.push(employees[i].last_name);
+                        }
+                        
+                        return arrayOfChoices;
+                },
+                    message: "which employee would you like to rmemove?",
+
+            }
     ]).then (function(answer) {
         connection.query("DELETE FROM employee WHERE ?", 
     {
-        id: answer.employee_id
+        last_name: answer.removeEmployee
     },
     function(error) { 
-        console.log(answer.employee_id + "has been deleted from your employees");
+        //fix console
+        console.log(answer.last_name + "has been deleted from your employees");
         start();
     }
     );
 })
-};
+})
+}
 
-// function to delete dept 
+
+//function to delete dept -- working :) 
+function removeDept() {
+var depQuery = "SELECT * FROM department;";
+
+    connection.query(depQuery, function (err, departments) {
+            if (err) throw err;
+
+            inquirer.prompt([ 
+                
+                {
+                    name: "removeDep",
+                    type: "rawlist",
+                    choices: function() {
+                        var arrayOfChoices = [];
+                        for (var i = 0; i < departments.length; i++) {
+                            arrayOfChoices.push(departments[i].department_name);
+                        }
+                        
+                        return arrayOfChoices;
+                },
+                    message: "which department would you like to rmemove?",
+
+            }
+    ]).then (function(answer) {
+        connection.query("DELETE FROM department WHERE ?", 
+    {
+        department_name: answer.removeDep
+    },
+    function(error) { 
+        //fix console
+        console.log(answer.department_name + "has been deleted from available departments");
+        start();
+    }
+    );
+})
+})
+}
+
 
 // function to delete role
+function removeRole() {
+    var roleQuery = "SELECT * FROM employee_role;";
+    
+        connection.query(roleQuery, function (err, roles) {
+                if (err) throw err;
+    
+                inquirer.prompt([ 
+                    
+                    {
+                        name: "removeRole",
+                        type: "rawlist",
+                        choices: function() {
+                            var arrayOfChoices = [];
+                            for (var i = 0; i < roles.length; i++) {
+                                arrayOfChoices.push(roles[i].title);
+                            }
+                            
+                            return arrayOfChoices;
+                    },
+                        message: "which role would you like to rmemove?",
+    
+                }
+        ]).then (function(answer) {
+            connection.query("DELETE FROM role WHERE ?", 
+        {
+            title: answer.removeRole
+        },
+        function(error) { 
+            //this is broken
+            console.log(answer + "has been deleted from available roles");
+            start();
+        }
+        );
+    })
+    })
+    }
 
 //function to view employees by dep
 
