@@ -25,46 +25,55 @@ function start() {
         type: 'list',
         name: 'options',
         message: 'What would you like to do?',
-        choices: ['View all employees', 'View all employees by department', 'View all departments', 'View all roles', 'View all employees by manager', 'add employee', 'remove employee', 'add department', 'add role',  'update employee role', 'update employee manager']
+        choices: ['View All Employees', 'View All Departments', 'View All Roles', 'Add Employee', 'Add Department', 'Add Role',  'Update Employee Role', 'Remove Employee', 'Remove Department', 'Remove Role', 'View All Employees by Department', 'View all Employees by Manager', 'Update Employee Manager']
     },
 ])
 .then(function(response) {
     switch(response.options) {
-        case "View all employees":
+        case "View All Employees":
             viewEmployees()
             break;
-        case "View all employees by department":
-            employeesByDep()
-            break;
-        case "View all departments":
+        case "View All Departments":
             allDeps()
             break;
-        case "View all roles":
+        case "View All Roles":
             allRoles()
             break;
-        case "add employee":
+        case "Add Employee":
             addEmployee()
             break;
-        case "remove employee":
-            removeEmployee()
-            break;
-        case "add department":
+        case "Add Department":
             addDep()
             break;
-        case "add role":
+        case "Add Role":
             addRole()
             break;
-        case "update employee role":
+        case "Update Employee Role":
             updateRole()
             break;
-        case "update employee manager":
+        case "Remove Employee":
+            removeEmployee()
+            break;
+        case "Remove Department":
+            removeDept()
+            break;
+        case "Remove Role":
+            removeRole()
+            break;
+        case "View All Employees by Department":
+            employeesByDep()
+            break;
+        case "View All Employees by Manager":
+            employeesByMan()
+            break;
+        case "Update Employee Manager":
             updateManager()
             break;
     }
 });
 };
 
-//function to view all employees -- working
+//function to view all employees -- ADD MANAGER
 function viewEmployees() {
     connection.query(`
     SELECT first_name AS FirstName, 
@@ -75,14 +84,14 @@ function viewEmployees() {
     FROM employee 
     INNER JOIN department 
     ON department.id = employee.role_id 
-    LEFT JOIN employee_role on employee_role.id = employee.role_id`, function(err, data) { 
+    LEFT JOIN employee_role 
+    ON employee_role.id = employee.role_id`, function(err, data) { 
         if (err) throw err;
         console.table(data)
         start();
 
     })
 };
-
 
 //function to view all departments
 function allDeps() {
@@ -94,11 +103,14 @@ function allDeps() {
     })
 };
 
-
 //function to view all roles -- add title, role id , department and salary
 function allRoles() {
     connection.query(
-        `SELECT id AS ID, title AS Role,  salary as Salary, department_id AS "Department" FROM employee_role`, function(err, data) { 
+        `SELECT employee_role.id AS ID, title AS "Employee Role", employee_role.salary as Salary, department_id AS "Dept #", department_name AS "Department" 
+        FROM employee_role
+        INNER JOIN department
+        ON department.id = department_id
+        `, function(err, data) { 
         if (err) throw err;
         console.table(data)
         start()
@@ -270,62 +282,7 @@ function updateRole() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //BONUS FUNCTIONS 
-
-//function to view employees by manager
-function employeesByManager() {
-    connection.query(
-        `SELECT employee.manager_id, employee.last_name
-        AS manager_id
-        FROM employee 
-        LEFT JOIN employee 
-        ON employee.last_name = employee.manager_id `, function(err, data) { 
-        if (err) throw err;
-        console.table(data)
-        start();
-    })
-};
-//i have no idea how to do this
-// function updateManager() 
-    // connection.query("SELECT * FROM employee", function(err, data) { 
-    
-
-
-//function to view employees by department
-function employeesByDep() {
-    connection.query(
-        `SELECT department_name AS Departments 
-        FROM department
-        LEFT JOIN employee
-        ON `, function(err, data) { 
-        if (err) throw err;
-        console.table(data)
-        start()
-    })
-
-};
 
 //function to delete employee
 function removeEmployee() {
@@ -348,10 +305,14 @@ function removeEmployee() {
 })
 };
 
-//function to update employee managers
+// function to delete dept 
 
-//function to delete dep
+// function to delete role
 
-//function to delete role
-// View the total utilized budget of a department—i.e., the combined salaries of all employees in that department.
+//function to view employees by dep
 
+//function to view employees by manager
+
+// function to update employee manager
+
+//function to view employees by manager
