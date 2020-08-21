@@ -80,21 +80,6 @@ function viewEmployees() {
 };
 
 
-//function to view employees by department
-function employeesByDep() {
-    connection.query(
-        `SELECT department_name AS Departments 
-        FROM department
-        LEFT JOIN employee
-        ON `, function(err, data) { 
-        if (err) throw err;
-        console.table(data)
-        start()
-    })
-
-};
-
-
 //function to view all departments
 function allDeps() {
     connection.query(
@@ -176,25 +161,6 @@ function addEmployee() {
     })
 };
 
-function removeEmployee() {
-    inquirer.prompt([ 
-        {
-            type: "input",
-            name: "employee_id",
-            message: "enter the employee's id"
-        },
-    ]).then (function(answer) {
-        connection.query("DELETE FROM employee WHERE ?", 
-    {
-        id: answer.employee_id
-    },
-    function(error) { 
-        console.log(answer.employee_id + "has been deleted from your employees");
-        start();
-    }
-    );
-})
-};
 
 //add department
 function addDep() {
@@ -214,8 +180,26 @@ function addDep() {
     })
 };
 
-//add role - but how do i make it a unique role? 
+//add department
 function addRole() {
+    inquirer.prompt([ 
+        {
+            name: "newRole",
+            type: "input",
+            message: ["what role would you like to add?"]
+        },
+    ]).then(function (answer){
+        var query = "INSERT INTO employee_role SET ?"
+        var addRole = connection.query(query, [{title: answer.newRole}], function(err) {
+            if(err) throw err;
+            console.table("role created!");
+            start()
+        })
+    })
+};
+
+//update role - but how do i add employee name? 
+function updateRole() {
     var roleQuery = "SELECT * FROM employee_role;";
     var departmentQuery = "SELECT * FROM department;";
 
@@ -279,6 +263,33 @@ function addRole() {
     })
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//BONUS FUNCTIONS 
+
 //function to view employees by manager
 function employeesByManager() {
     connection.query(
@@ -297,4 +308,46 @@ function employeesByManager() {
     // connection.query("SELECT * FROM employee", function(err, data) { 
     
 
+
+//function to view employees by department
+function employeesByDep() {
+    connection.query(
+        `SELECT department_name AS Departments 
+        FROM department
+        LEFT JOIN employee
+        ON `, function(err, data) { 
+        if (err) throw err;
+        console.table(data)
+        start()
+    })
+
+};
+
+//function to delete employee
+function removeEmployee() {
+    inquirer.prompt([ 
+        {
+            type: "input",
+            name: "employee_id",
+            message: "enter the employee's id"
+        },
+    ]).then (function(answer) {
+        connection.query("DELETE FROM employee WHERE ?", 
+    {
+        id: answer.employee_id
+    },
+    function(error) { 
+        console.log(answer.employee_id + "has been deleted from your employees");
+        start();
+    }
+    );
+})
+};
+
+//function to update employee managers
+
+//function to delete dep
+
+//function to delete role
+// View the total utilized budget of a department—i.e., the combined salaries of all employees in that department.
 
