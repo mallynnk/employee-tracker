@@ -200,26 +200,8 @@ function addDep() {
     })
 };
 
-//add role -- working, but prob want to add salary, department too 
+//Add Role
 function addRole() {
-    inquirer.prompt([ 
-        {
-            name: "newRole",
-            type: "input",
-            message: ["what role would you like to add?"]
-        },
-    ]).then(function (answer){
-        var query = "INSERT INTO employee_role SET ?"
-        var addRole = connection.query(query, [{title: answer.newRole}], function(err) {
-            if(err) throw err;
-            console.table("role created!");
-            start()
-        })
-    })
-};
-
-//update role - but how do i add employee name? 
-function updateRole() {
     var roleQuery = "SELECT * FROM employee_role;";
     var departmentQuery = "SELECT * FROM department;";
 
@@ -231,17 +213,10 @@ function updateRole() {
             inquirer.prompt([ 
                 
                 {
-                    name: "newRole",
-                    type: "rawlist",
-                    choices: function() {
-                        var arrayOfChoices = [];
-                        for (var i = 0; i < roles.length; i++) {
-                            arrayOfChoices.push(roles[i].title);
-                        }
-                        
-                        return arrayOfChoices;
-                },
-                    message: "which role would you like to add?",
+                        name: "newRole",
+                        type: "input",
+                        message: ["what role would you like to add?"]
+            
                 },
                 {
                     name: "newSalary",
@@ -284,6 +259,23 @@ function updateRole() {
 };
 
 
+// Update Employee Role
+function updateRole() {
+    inquirer.prompt([ 
+        {
+            name: "updateRole",
+            type: "input",
+            message: ["what role would you like to add?"]
+        },
+    ]).then(function (answer){
+        var query = "INSERT INTO employee_role SET ?"
+        var addRole = connection.query(query, [{title: answer.newRole}], function(err) {
+            if(err) throw err;
+            console.table("role created!");
+            start()
+        })
+    })
+};
 
 
 //BONUS FUNCTIONS 
@@ -405,9 +397,56 @@ function removeRole() {
     }
 
 //function to view employees by dep
+// function employeesByDep() {
+//         var departmentQuery = "SELECT * FROM department;";
+//         var employeeQuery = "SELECT last_name AS 'Last Name', first_name AS 'First Name' FROM employee WHERE department_id = ?"
+    
+//         connection.query(departmentQuery, function (err, department) {
+    
+//                 if (err) throw err;
+    
+//                 inquirer.prompt([ 
+                    
+//                     {
+//                         name: "depChoice",
+//                         type: "rawlist",
+//                         choices: function() {
+//                             var arrayOfChoices = [];
+//                             for (var i = 0; i < department.length; i++) {
+//                                 arrayOfChoices.push(department[i].department_name);
+//                             }
+                            
+//                             return arrayOfChoices;
+//                     },
+//                         message: "which department would you like to view employees from?",
+//                     },
+//                 ]).then(function (answer) {
+//                     connection.query(employeeQuery, function (err, employee) {
+
+//                     })
+//                     for (var i= 0; i < department.length; i++) {
+//                         if (department[i].department_name === answer.choice) {
+//                             answer.department_id = department[i].id;
+//                         }
+//                     }
+//                     var query = "INSERT INTO employee_role SET ?"
+//                     const values = {
+//                         title: answer.newRole,
+//                         salary: answer.newSalary,
+//                         department_id: answer.department_id
+//                     }
+//                     connection.query(query, values, function(err) {
+//                         if(err) throw err;
+//                         console.table("role created!");
+//                         start();
+//                     })
+//                 })
+//             })
+//         })
+//     };
 
 //function to view employees by manager
 
 // function to update employee manager
 
-//function to view employees by manager
+
