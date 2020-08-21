@@ -64,10 +64,14 @@ function start() {
 });
 };
 
-//function to view all employees
+//function to view all employees -- working
 function viewEmployees() {
     connection.query(`
-    SELECT first_name AS FirstName, last_name AS LastName, employee_role.title AS Role, employee_role.salary AS Salary, department.department_name AS Department 
+    SELECT first_name AS FirstName, 
+        last_name AS LastName, 
+        employee_role.title AS Role, 
+        employee_role.salary AS Salary, 
+        department.department_name AS Department 
     FROM employee 
     INNER JOIN department 
     ON department.id = employee.role_id 
@@ -83,7 +87,7 @@ function viewEmployees() {
 //function to view all departments
 function allDeps() {
     connection.query(
-        `SELECT department_name AS Departments FROM department`, function(err, data) { 
+        `SELECT id AS ID, department_name AS "Department Name" FROM department`, function(err, data) { 
         if (err) throw err;
         console.table(data)
         start()
@@ -91,10 +95,10 @@ function allDeps() {
 };
 
 
-//function to view all roles
+//function to view all roles -- add title, role id , department and salary
 function allRoles() {
     connection.query(
-        `SELECT title AS Roles FROM employee_role`, function(err, data) { 
+        `SELECT id AS ID, title AS Role,  salary as Salary, department_id AS "Department" FROM employee_role`, function(err, data) { 
         if (err) throw err;
         console.table(data)
         start()
@@ -102,7 +106,7 @@ function allRoles() {
 };
 
 
-
+//function to add employee -- working
 function addEmployee() {
     connection.query("SELECT * FROM employee_role", function (err, results) {
         if(err) throw err;
@@ -162,7 +166,7 @@ function addEmployee() {
 };
 
 
-//add department
+//add department -- working
 function addDep() {
     inquirer.prompt([ 
         {
@@ -180,7 +184,7 @@ function addDep() {
     })
 };
 
-//add department
+//add role -- working
 function addRole() {
     inquirer.prompt([ 
         {
