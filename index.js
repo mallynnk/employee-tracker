@@ -166,6 +166,7 @@ function addEmployee() {
             name: "manager",
             message: "who is they employee's manager?",
             choices: function() {
+                
                 let choiceArray = [];
                 for (var i=0; i < employees.length; i++) {
                     choiceArray.push(employees[i].last_name)
@@ -181,17 +182,18 @@ function addEmployee() {
             }
         }
         for (var i=0; i < employees.length; i++) {
-            if(employees[i].last_name === response.choice) {
+            if(employees[i].last_name === response.manager) {
                 response.manager_id = employees[i].id;
             }
         }
+        console.log(response)
         var query = "INSERT INTO employee SET ?"
 
         const values = {
             first_name: response.firstName,
             last_name: response.lastName,
             role_id: response.role_id,
-            manager_id: response.manager
+            manager_id: response.manager_id
         }
         connection.query(query, values, function(err) {
             if(err) throw err;
@@ -453,55 +455,54 @@ function removeRole() {
     })
 }
 }
-//function to view employees by dep
-// function employeesByDep() {
-//         var departmentQuery = "SELECT * FROM department;";
-//         var employeeQuery = "SELECT last_name AS 'Last Name', first_name AS 'First Name' FROM employee WHERE department_id = ?"
+// function to view employees by dep
+function employeesByDep() {
+        var departmentQuery = "SELECT * FROM department;";
+        var employeeQuery = "SELECT last_name AS 'Last Name', first_name AS 'First Name' FROM employee WHERE department_id = ?"
     
-//         connection.query(departmentQuery, function (err, department) {
+        connection.query(departmentQuery, function (err, department) {
     
-//                 if (err) throw err;
+                if (err) throw err;
     
-//                 inquirer.prompt([ 
+                inquirer.prompt([ 
                     
-//                     {
-//                         name: "depChoice",
-//                         type: "rawlist",
-//                         choices: function() {
-//                             var arrayOfChoices = [];
-//                             for (var i = 0; i < department.length; i++) {
-//                                 arrayOfChoices.push(department[i].department_name);
-//                             }
+                    {
+                        name: "depChoice",
+                        type: "rawlist",
+                        choices: function() {
+                            var arrayOfChoices = [];
+                            for (var i = 0; i < department.length; i++) {
+                                arrayOfChoices.push(department[i].department_name);
+                            }
                             
-//                             return arrayOfChoices;
-//                     },
-//                         message: "which department would you like to view employees from?",
-//                     },
-//                 ]).then(function (answer) {
-//                     connection.query(employeeQuery, function (err, employee) {
+                            return arrayOfChoices;
+                    },
+                        message: "which department would you like to view employees from?",
+                    },
+                ]).then(function (answer) {
+                    connection.query(employeeQuery, function (err, employee) {
 
-//                     })
-//                     for (var i= 0; i < department.length; i++) {
-//                         if (department[i].department_name === answer.choice) {
-//                             answer.department_id = department[i].id;
-//                         }
-//                     }
-//                     var query = "INSERT INTO employee_role SET ?"
-//                     const values = {
-//                         title: answer.newRole,
-//                         salary: answer.newSalary,
-//                         department_id: answer.department_id
-//                     }
-//                     connection.query(query, values, function(err) {
-//                         if(err) throw err;
-//                         console.table("role created!");
-//                         start();
-//                     })
-//                 })
-//             })
-//         })
-//     };
-
+                    })
+                    for (var i= 0; i < department.length; i++) {
+                        if (department[i].department_name === answer.choice) {
+                            answer.department_id = department[i].id;
+                        }
+                    }
+                    var query = "INSERT INTO employee_role SET ?"
+                    const values = {
+                        title: answer.newRole,
+                        salary: answer.newSalary,
+                        department_id: answer.department_id
+                    }
+                    connection.query(query, values, function(err) {
+                        if(err) throw err;
+                        console.table("role created!");
+                        start();
+                    })
+                })
+            })
+     
+        }
 //function to view employees by manager
 
 //function to update employee manager
