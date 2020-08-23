@@ -64,8 +64,8 @@ function start() {
         case "View All Employees by Department":
             employeesByDep()
             break;
-        case "View All Employees by Manager":
-            employeesByMan()
+        case "View all Employees by Manager":
+            employeesByManager()
             break;
         case "Update Employee Manager":
             updateManager()
@@ -466,12 +466,9 @@ function removeRole() {
 
 // function to view employees by dep -- not done
 function employeesByDep() {
-        var departmentQuery = "SELECT * FROM department;";
-        var employeeQuery = "SELECT last_name AS 'Last Name', first_name AS 'First Name' FROM employee WHERE department_id = ?"
+        let departmentQuery = "SELECT * FROM department;";   
     
         connection.query(departmentQuery, function (err, department) {
-            connection.query(employeeQuery, function(err, employees) 
-        {
     
                 if (err) throw err;
     
@@ -497,21 +494,64 @@ function employeesByDep() {
                             response.department_id = department[i].id;
                         }
                     }
-                    const values = {
-                        department_id: response.depChoice,
-                    }
-                    connection.query(employeeQuery, values, function(err) {
+
+                    let employeeQuery = `SELECT employee.last_name AS 'Last Name', 
+                    employee.first_name AS 'First Name'
+                    FROM employee 
+                    INNER JOIN employee_role 
+                    ON employee_role.id = employee.role_id
+                    WHERE department_id = ${response.department_id}`
+                    
+                    connection.query(employeeQuery, function(err, data) {
                         if(err) throw err;
-                        console.table("Role created!");
+                        console.table(data);
                         start();
                     })
                 })
             })
-        })
-    };
+        }
         
         
 //function to view employees by manager
+function employeesByManager() {
+    let employeeQuery = "SELECT * FROM employee;";   
+    connection.query(employeeQuery, function (err, employees) {
+            if (err) throw err;
+
+            inquirer.prompt([ 
+                
+                {
+                    name: "manChoice",
+                    type: "rawlist",
+                    choices: function() {
+                        var arrayOfChoices = [];
+                        for (var i = 0; i < employees.length; i++) {
+                            arrayOfChoices.push(`${employees[i].first_name} ${employees[i].last_name}`);
+                        }
+                        
+                        return arrayOfChoices;
+                },
+                    message: "which manager's employees would you like to view?",
+                },
+    
+
+            ]).then(function (response) {
+                for (var i= 0; i < employees.length; i++) {
+                    if (`${employees[i].first_name} ${employees[i].last_name}` === response.manChoice) {
+                        response.manager_id = employees[i].id;
+                    }
+                }
+
+            let empDisplay = `SELECT first_name AS 'First Name', last_name AS 'Last Name' FROM employee WHERE employee.manager_id = ${response.manager_id};`
+
+            connection.query(empDisplay, function(err, data) {
+                if(err) throw err;
+                console.table(data);
+                start();
+            })     
+            })
+        })
+    }
 
 //function to update employee manager
 
