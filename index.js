@@ -187,7 +187,7 @@ function addEmployee() {
                 response.manager_id = employees[i].id;
             }
         }
-        console.log(response)
+
         var query = "INSERT INTO employee SET ?"
 
         const values = {
@@ -198,7 +198,7 @@ function addEmployee() {
         }
         connection.query(query, values, function(err) {
             if(err) throw err;
-            console.log(response.firstName + " has been added!");
+            console.log(`${response.firstName} ${response.lastName} has been added!`);
             start();
         })
 
@@ -220,7 +220,7 @@ function addDep() {
         var query = "INSERT INTO department SET ?"
         var addDep = connection.query(query, [{department_name: response.newDep}], function(err) {
             if(err) throw err;
-            console.table(response.newDep + " has been added to 'Departments'!");
+            console.table(`${response.newDep} has been added to "Departments"!`);
             start()
         })
     })
@@ -276,7 +276,7 @@ function addRole() {
                 }
                 connection.query(query, values, function(err) {
                     if(err) throw err;
-                    console.table(response.newRole + " has been added to available roles!");
+                    console.table(`${response.newRole} has been added to available roles!`);
                     start();
                 })
             })
@@ -287,7 +287,7 @@ function addRole() {
 
 // Update Employee Role -- you gotta figure it out bish
 function updateRole() {
-
+    
  let employeeQuery = "SELECT * FROM employee";
  let roleQuery = "SELECT * from employee_role";
 
@@ -303,7 +303,7 @@ function updateRole() {
                 choices: function() {
                     let choiceArray = [];
                     for (var i=0; i < employees.length; i++) {
-                        choiceArray.push(employees[i].last_name)
+                        choiceArray.push(`${employees[i].first_name} ${employees[i].last_name}`)
                     }
                     return choiceArray;
                 }
@@ -325,29 +325,22 @@ function updateRole() {
     ]) .then(function(response) {
         
         for (var i=0; i < roles.length; i++) {
-            if(roles[i].title === response.employeeName) {
+            if(roles[i].title === response.newRole) {
                 response.role_id = roles[i].id;
             }
         }
         for (var i=0; i < employees.length; i++) {
-            if(employees[i].last_name === response.newRole) {
-                response.last_name = employees[i].id;
+            if(`${employees[i].first_name} ${employees[i].last_name}` === response.employeeName) {
+                response.id = employees[i].id;
             }
         }
-        console.log(response)
-        var query = `UPDATE employee SET employee.role_id = ? 
-        WHERE employee.last_name = ?`
+    
+        var query = `UPDATE employee SET employee.role_id = ${response.role_id} 
+        WHERE employee.id = ${response.id}`
 
-        const values = {
-           
-            role_id: response.newRole,
-            last_name: response.employeeName
-           
-        }
-        console.log(values)
-        connection.query(query, values, function(err) {
+        connection.query(query, function(err) {
             if(err) throw err;
-            console.log(response.employeeName + " has been added!");
+            console.log(`${response.employeeName}'s role has changed!`);
             start();
         })
 
@@ -358,7 +351,7 @@ function updateRole() {
 
 //BONUS FUNCTIONS 
 
-//function to delete employee -- working but want to show more employee info
+//function to delete employee 
 function removeEmployee() {
     var employeeQuery = "SELECT * FROM employee;";
 
@@ -373,7 +366,7 @@ function removeEmployee() {
                     choices: function() {
                         let arrayOfChoices = [];
                         for (var i = 0; i < employees.length; i++) {
-                            arrayOfChoices.push(employees[i].last_name);
+                            arrayOfChoices.push(`${employees[i].first_name} `  +  `${employees[i].last_name}`);
                         }
                         
                         return arrayOfChoices;
@@ -388,13 +381,14 @@ function removeEmployee() {
     },
     function(error) { 
         //fix console
-        console.log(response.removeEmployee + ` has been deleted`);
+        console.log(`${response.removeEmployee} has been deleted`);
         start();
     }
     );
 })
 })
 }
+
 
 //function to delete dept -- done
 function removeDept() {
@@ -425,8 +419,7 @@ var depQuery = "SELECT * FROM department;";
         department_name: response.removeDep
     },
     function(error) { 
-        //fix console
-        console.log(response.department_name + "has been deleted from available departments");
+        console.log(`${response.department_name} has been deleted from available departments`);
         start();
     }
     );
@@ -464,15 +457,14 @@ function removeRole() {
             title: response.removeRole
         },
         function(error) { 
-            //this is broken
-            console.log(response + "has been deleted from available roles");
+            console.log(`${response} has been deleted from available roles`);
             start();
         })
     })
     })
 }
 
-// function to view employees by dep
+// function to view employees by dep -- not done
 function employeesByDep() {
         var departmentQuery = "SELECT * FROM department;";
         var employeeQuery = "SELECT last_name AS 'Last Name', first_name AS 'First Name' FROM employee WHERE department_id = ?"
