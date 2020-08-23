@@ -26,7 +26,7 @@ function start() {
         type: 'list',
         name: 'options',
         message: 'What would you like to do?',
-        choices: ['View All Employees', 'View All Departments', 'View All Roles', 'Add Employee', 'Add Department', 'Add Role',  'Update Employee Role', 'Remove Employee', 'Remove Department', 'Remove Role', 'View All Employees by Department', 'View all Employees by Manager', 'Update Employee Manager']
+        choices: ['View All Employees', 'View All Departments', 'View All Roles', 'Add Employee', 'Add Department', 'Add Role',  'Update Employee Role', 'Remove Employee', 'Remove Department', 'Remove Role', 'View All Employees by Department', 'View all Employees by Manager', 'Update Employee Manager', 'Total Sal']
     },
 ])
 .then(function(response) {
@@ -69,6 +69,9 @@ function start() {
             break;
         case "Update Employee Manager":
             updateManager()
+            break;
+        case "Total Sal":
+            totalSal()
             break;
     }
 });
@@ -427,7 +430,6 @@ var depQuery = "SELECT * FROM department;";
 })
 }
 
-
 // function to delete role
 function removeRole() {
     var roleQuery = "SELECT * FROM employee_role;";
@@ -616,4 +618,52 @@ function updateManager() {
            });
        })
     }
+
+// function to view the total utilized budget of a department (i.e., the combined salaries of all employees in that department) 
+
+function totalSal() {
+    let departmentQuery = "SELECT * FROM department;";   
+
+
+    connection.query(departmentQuery, function (err, department) {
+
+            if (err) throw err;
+
+            inquirer.prompt([ 
+                
+                {
+                    name: "depChoice",
+                    type: "rawlist",
+                    choices: function() {
+                        var arrayOfChoices = [];
+                        for (var i = 0; i < department.length; i++) {
+                            arrayOfChoices.push(department[i].department_name);
+                        }
+                        
+                        return arrayOfChoices;
+                },
+                    message: "Which department would you like to view employees from?",
+                },
+
+            ]).then(function (response) {
+                for (var i= 0; i < department.length; i++) {
+                    if (department[i].department_name === response.depChoice) {
+                        response.department_id = department[i].id;
+                    }
+                }
+
+                let employeeQuery = `SELECT SUM (employee_role.salary) AS 'Total Utilized'
+                FROM employee_role
+                WHERE department_id = ${response.department_id}`
+
+                connection.query(employeeQuery , function(err, data) {
+                    if(err) throw err;
+                    console.table(data);
+                    start();
+                })     
+                
+            })
+        })
+    }
+
 
