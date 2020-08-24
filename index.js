@@ -2,7 +2,6 @@ const fs = require("fs")
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 const mysql = require('mysql2');
-const { query } = require("express");
 
 //create connection to database
 const connection = mysql.createConnection({
@@ -178,7 +177,7 @@ function addEmployee() {
                 return choiceArray;
             }
         },
-    ]) .then(function(response) {
+    ]).then(function(response) {
         
         for (var i=0; i < roles.length; i++) {
             if(roles[i].title === response.choice) {
@@ -338,7 +337,7 @@ function updateRole() {
             }
         }
     
-        var query = `UPDATE employee SET employee.role_id = ${response.role_id} 
+        let query = `UPDATE employee SET employee.role_id = ${response.role_id} 
         WHERE employee.id = ${response.id}`
 
         connection.query(query, function(err) {
@@ -369,7 +368,7 @@ function removeEmployee() {
                     choices: function() {
                         let arrayOfChoices = [];
                         for (var i = 0; i < employees.length; i++) {
-                            arrayOfChoices.push(`${employees[i].first_name} `  +  `${employees[i].last_name}`);
+                            arrayOfChoices.push(`${employees[i].first_name} ${employees[i].last_name}`);
                         }
                         
                         return arrayOfChoices;
@@ -380,10 +379,9 @@ function removeEmployee() {
     ]).then (function(response) {
         connection.query("DELETE FROM employee WHERE ?", 
     {
-        last_name: response.removeEmployee
+        name: response.removeEmployee
     },
     function(error) { 
-        //fix console
         console.log(`${response.removeEmployee} has been deleted`);
         start();
     }
