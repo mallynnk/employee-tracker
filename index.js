@@ -25,7 +25,7 @@ function start() {
         type: 'list',
         name: 'options',
         message: 'What would you like to do?',
-        choices: ['View All Employees', 'View All Departments', 'View All Roles', 'Add Employee', 'Add Department', 'Add Role',  'Update Employee Role', 'Remove Employee', 'Remove Department', 'Remove Role', 'View All Employees by Department', 'View all Employees by Manager', 'Update Employee Manager', 'Total Sal']
+        choices: ['View All Employees', 'View All Departments', 'View All Roles', 'Add Employee', 'Add Department', 'Add Role',  'Update Employee Role', 'Remove Employee', 'Remove Department', 'Remove Role', 'View All Employees by Department', 'View all Employees by Manager', 'Update Employee Manager', 'View Utilized Budget By Department']
     },
 ])
 .then(function(response) {
@@ -69,7 +69,7 @@ function start() {
         case "Update Employee Manager":
             updateManager()
             break;
-        case "Total Sal":
+        case "View Utilized Budget By Department":
             totalSal()
             break;
     }
@@ -79,18 +79,12 @@ function start() {
 //function to view all employees
 function viewEmployees() {
     connection.query(`
-    SELECT employee.id AS ID, employee.first_name AS FirstName, 
-        employee.last_name AS LastName, 
-        employee_role.title AS Role, 
-        employee_role.salary AS Salary, 
-        department.department_name AS Department,
-        manager.last_name AS Manager
-    FROM employee
-    INNER JOIN department 
-    ON department.id = employee.role_id 
-    LEFT JOIN employee_role 
-    ON employee_role.id = employee.role_id
-    INNER JOIN employee manager ON employee.manager_id = manager.id
+    SELECT employee.id AS ID, employee.first_name as 'First Name', employee.last_name AS 'Last Name', 
+    employee_role.title as Role, department.department_name AS Department, employee_role.salary as Salary, 
+    CONCAT(manager.first_name, ' ', manager.last_name) AS Manager 
+    FROM employee LEFT JOIN employee_role on employee.role_id = employee_role.id 
+    LEFT JOIN department on employee_role.department_id = department.id 
+    LEFT JOIN employee manager on manager.id = employee.manager_id
     ORDER BY employee.id ASC`, function(err, data) { 
         if (err) throw err;
         console.table(data)
@@ -353,9 +347,9 @@ function updateRole() {
 
 //BONUS FUNCTIONS 
 
-//function to delete employee 
+// function to delete employee 
 function removeEmployee() {
-    var employeeQuery = "SELECT * FROM employee;";
+    let employeeQuery = `SELECT * FROM employee;`;
 
     connection.query(employeeQuery, function (err, employees) {
             if (err) throw err;
@@ -368,7 +362,7 @@ function removeEmployee() {
                     choices: function() {
                         let arrayOfChoices = [];
                         for (var i = 0; i < employees.length; i++) {
-                            arrayOfChoices.push(`${employees[i].first_name} ${employees[i].last_name}`);
+                            arrayOfChoices.push(`${employees[i].first_name} ${employees[i].last_name} ${employees[i].id}`);
                         }
                         
                         return arrayOfChoices;
@@ -377,10 +371,9 @@ function removeEmployee() {
 
             }
     ]).then (function(response) {
-        connection.query("DELETE FROM employee WHERE ?", 
-    {
-        name: response.removeEmployee
-    },
+        console.log(response)
+        connection.query(`DELETE FROM employee WHERE employee.id = ${response.removeEmployee}`, 
+
     function(error) { 
         console.log(`${response.removeEmployee} has been deleted`);
         start();
@@ -452,7 +445,8 @@ function removeRole() {
     
                 }
         ]).then (function(response) {
-            connection.query("DELETE FROM role WHERE ?", 
+            console.log(response)
+            connection.query("DELETE FROM employee_role WHERE ?", 
         {
             title: response.removeRole
         },
@@ -604,8 +598,6 @@ function updateManager() {
        
            var query = `UPDATE employee SET employee.manager_id = ${response.manager_id} 
            WHERE employee.id = ${response.id}`
-
-           console.log(query)
    
            connection.query(query, function(err) {
                if(err) throw err;
