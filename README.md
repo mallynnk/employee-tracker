@@ -9,21 +9,19 @@ An employee tracking application that uses the inquirer dependency in node.js, m
 
 ## Built With
 * node.js
-* Inquirer
-* Console Table
+* inquirer
 * mysql2 
 
 ## Installation
 
 In order to use this program, the inquirer, console table, and mysql2 dependencies must be installed. 
 
+## Walkthrough Video
+https://drive.google.com/file/d/1Llt9LVLoX5ApCDHZGfiVDHhXzJCOLpMz/view
+
 
 ## License
 This project is covered by ISC.
-
-## Screenshot
- ![Screenshot of page1](/public/assets/img/sample1.png)
- ![Screenshot of page2](public/assets/img/sample2.png)
 
 ## Contribution
 Mallory Korpics (https://github.com/mallynnk)
